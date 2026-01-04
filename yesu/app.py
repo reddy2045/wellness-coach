@@ -51,7 +51,8 @@ import MySQLdb
 from flask import jsonify, request
 import os
 from flask import Flask
-
+import pymysql
+import os
 UPLOAD_FOLDER = 'static/uploads/profile_images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
@@ -954,8 +955,15 @@ def save_profile_image(file, user_id):
     
     return filename
 
-
-
+def get_db_connection():
+    return pymysql.connect(
+        host=os.getenv("MYSQL_HOST"),
+        user=os.getenv("MYSQL_USER"),
+        password=os.getenv("MYSQL_PASSWORD"),
+        database=os.getenv("MYSQL_DB"),
+        port=int(os.getenv("MYSQL_PORT")),
+        cursorclass=pymysql.cursors.DictCursor
+    )
 
 def init_database():
     """Initialize database with all required tables and sample data"""
@@ -3254,4 +3262,5 @@ if __name__ == '__main__':
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
 
