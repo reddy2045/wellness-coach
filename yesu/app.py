@@ -49,6 +49,9 @@ import io
 from simple_pdf_generator import generate_simple_pdf
 import MySQLdb
 from flask import jsonify, request
+import os
+from flask import Flask
+
 UPLOAD_FOLDER = 'static/uploads/profile_images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
@@ -70,18 +73,32 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Initialize Flask app
+
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'wellness-coach-secure-key-2024'
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Reddy@123'
-app.config['MYSQL_DB'] = 'wellness_coach'
+
+# Security
+app.config['SECRET_KEY'] = os.getenv(
+    'SECRET_KEY',
+    'wellness-coach-secure-key-2024'  # fallback for local
+)
+
+# MySQL (Railway / Production)
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
+app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
+app.config['MYSQL_PORT'] = int(os.getenv('MYSQL_PORT', 3306))
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+
+# Uploads
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+# Flask
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['DEBUG'] = True
+app.config['DEBUG'] = False   # IMPORTANT for production
+
 
 # Initialize extensions
 mysql = MySQL(app)
@@ -3237,3 +3254,4 @@ if __name__ == '__main__':
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
