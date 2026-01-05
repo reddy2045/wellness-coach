@@ -32,3 +32,9 @@ itsdangerous==2.1.2
 
 # Production
 gunicorn==21.2.0
+
+Flask
+gunicorn
+flask-mysqldb
+mysqlclient
+python-dotenv
